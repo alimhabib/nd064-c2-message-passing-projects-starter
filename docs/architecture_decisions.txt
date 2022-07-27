@@ -1,0 +1,38 @@
+
+* Add location micro Services  
+
+* will create connection microservice:
+	- use Kafka as cache storage, such that if any of the pods is down you still can get them from the cache 
+	- converted to gRPC ( as it's only usde internally ) 
+
+* finally person microService to handle person functionality, and call connection service internally 
+
+
+in terms of progress and development 
+
+* start with Connection microservice, as it's a seperate block
+	- Code 
+		* Search for the Cache if any return otherwise, get from the DataBase 
+		* gRPC implement 
+		* person Service to use the code 
+		-- OutOfSCope: Update the Cache frequently, or according to specific strategy 
+	- docker image 
+	- github workflow to build and push the image  
+	- replace the main code to use the API 
+	- deployment script 
+* Location Service as it's not used by any client yet 
+	- Code 
+		* cleanup and seperate project  
+		* OpenAPI implementation   
+	- docker image 
+	- github workflow to build and push the image  
+	- replace the main code to use the API 
+	- deployment script 
+- Person microService 
+	- Code 
+		* cleanup and seperate project  
+		* OpenAPI implementation   
+	- docker image 
+	- github workflow to build and push the image  
+	- replace the frontend code to use the API 
+	- deployment script 
