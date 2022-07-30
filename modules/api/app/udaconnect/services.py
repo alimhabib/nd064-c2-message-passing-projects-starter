@@ -9,13 +9,46 @@ from app.udaconnect.models import Connection, Location, Person
 from app.udaconnect.schemas import ConnectionSchema, LocationSchema, PersonSchema
 from geoalchemy2.functions import ST_AsText, ST_Point
 from sqlalchemy.sql import text
+from confluent_kafka import Producer,Consumer
+import socket
 
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("udaconnect-api")
+conf = {"bootstrap.servers": "kafka-service:9092", "client.id": socket.gethostname()}
 
 locationServiceUrl = "http://localhost"
 
 class ConnectionService:
+    @staticmethod
+    def delivery_report(err, msg):
+        """ Called once for each message produced to indicate delivery result.
+            Triggered by poll() or flush(). """
+        if err is not None:
+            print('Message delivery failed: {}'.format(err))
+        else:
+            print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
+
+    @staticmethod
+    def add_connections_to_Kafka(person_id: int, connections: List[Connection]):
+        """ A method to cach the connections. """
+        p = Producer(conf)
+        p.poll(0)
+        p.produce(f'Person_{person_id}', json.dump(connections).encode('utf-8'), callback=ConnectionService.delivery_report)
+    
+    def get_connections_from_Kafka(person_id: int )->List[Connection]:
+        """ A method to cach the connections. """
+        c = Consumer(conf)
+        c.subscribe(f'Person_{person_id}')
+        msg = c.poll(1.0)  
+        if msg is None:
+            return []
+        if msg.error():
+            print("Consumer error: {}".format(msg.error()))
+            return []
+        result =json.loads(msg.value().decode('utf-8'))
+        c.close() 
+        return result
+
     @staticmethod
     def find_contacts(person_id: int, start_date: datetime, end_date: datetime, meters=5
     ) -> List[Connection]:
@@ -26,52 +59,29 @@ class ConnectionService:
         large datasets. This is by design: what are some ways or techniques to help make this data integrate more
         smoothly for a better user experience for API consumers?
         """
-        # Cache all users in memory for quick lookup
-        person_map: Dict[str, Person] = {person.id: person for person in PersonService.retrieve_all()}
+        
 
-        location_apiUrl = f'{locationServiceUrl}:{os.environ["LOCATION_API_PORT"]}/api/locations/connectionslocations?person_id={person_id}&start_date={start_date}&end_date={end_date}&distance={meters}'
-        response = requests.get(location_apiUrl)
-        locations = json.loads(response.json())
         result: List[Connection] = []
-        for location in locations:
-            result.append(
-                    Connection(
-                        person=person_map[location.person_id], location=location,
-                    )
-            )       
+        result = ConnectionService.get_connections_from_Kafka(person_id)
+        if len(result) == 0:
+            # Cache all users in memory for quick lookup
 
-        return result
+            person_map: Dict[str, Person] = {person.id: person for person in PersonService.retrieve_all()}
 
-
-class LocationService:
-    @staticmethod
-    def retrieve(location_id) -> Location:
-        location, coord_text = (
-            db.session.query(Location, Location.coordinate.ST_AsText())
-            .filter(Location.id == location_id)
-            .one()
-        )
-
-        # Rely on database to return text form of point to reduce overhead of conversion in app code
-        location.wkt_shape = coord_text
-        return location
-
-    @staticmethod
-    def create(location: Dict) -> Location:
-        validation_results: Dict = LocationSchema().validate(location)
-        if validation_results:
-            logger.warning(f"Unexpected data format in payload: {validation_results}")
-            raise Exception(f"Invalid payload: {validation_results}")
-
-        new_location = Location()
-        new_location.person_id = location["person_id"]
-        new_location.creation_time = location["creation_time"]
-        new_location.coordinate = ST_Point(location["latitude"], location["longitude"])
-        db.session.add(new_location)
-        db.session.commit()
-
-        return new_location
-
+            location_apiUrl = f'{locationServiceUrl}:{os.environ["LOCATION_API_PORT"]}/api/locations/connectionslocations?person_id={person_id}&start_date={start_date}&end_date={end_date}&distance={meters}'
+            response = requests.get(location_apiUrl)
+            locations = json.loads(response.json())
+            result: List[Connection] = []
+            for location in locations:
+                result.append(
+                        Connection(
+                            person=person_map[location.person_id], location=location,
+                        )
+                )       
+            ConnectionService.add_connections_to_Kafka(person_id , result)
+            return result
+        else:
+            return result
 
 class PersonService:
     @staticmethod

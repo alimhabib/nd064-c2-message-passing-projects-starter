@@ -15,15 +15,7 @@ DATE_FORMAT = "%Y-%m-%d"
 api = Namespace("UdaConnect", description="Connections via geolocation.")  # noqa
 
 
-@api.route("/locations")
-@api.route("/locations/<location_id>")
-@api.param("location_id", "Unique ID for a given Location", _in="query")
-
-@api.route("/locations/connectionslocations")
-@api.param("person_id", "personId", _in="query")
-@api.param("start_date", "Lower bound of date range", _in="query")
-@api.param("end_date", "Upper bound of date range", _in="query")
-@api.param("distance", "Proximity to a given user in meters", _in="query")
+@api.route("/locations") 
 class LocationResource(Resource):
     @accepts(schema=LocationSchema)
     @responds(schema=LocationSchema)
@@ -32,13 +24,22 @@ class LocationResource(Resource):
         location: Location = LocationService.create(request.get_json())
         return location
 
+@api.route("/locations/<location_id>")
+@api.param("location_id", "Unique ID for a given Location", _in="query")
+class LocationResource(Resource):
     @responds(schema=LocationSchema)
     def get(self, location_id) -> Location:
         location: Location = LocationService.retrieve(location_id)
         return location
 
+@api.route("/locations/connectionslocations")
+@api.param("person_id", "personId", _in="query")
+@api.param("start_date", "Lower bound of date range", _in="query")
+@api.param("end_date", "Upper bound of date range", _in="query")
+@api.param("distance", "Proximity to a given user in meters", _in="query")
+class LocationResource(Resource):
     @responds(schema=LocationSchema(many=True))
-    def get() -> LocationSchema:
+    def get(self) -> LocationSchema:
         start_date: datetime = datetime.strptime(
             request.args["start_date"], DATE_FORMAT
         )

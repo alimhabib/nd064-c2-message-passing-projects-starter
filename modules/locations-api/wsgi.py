@@ -13,3 +13,4 @@ if __name__ == "__main__":
         logging.StreamHandler(sys.stdout),
         logging.StreamHandler(sys.stderr)
     ])  
+    app.run(debug=True)
