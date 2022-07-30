@@ -5,8 +5,8 @@ a dedicated deployment to Kafka, using the famous contributer confluentinc, foll
 
 ### Running 
 
-docker apply -f zookeper-deployment.yaml 
+kubectl apply -f zookeper-deployment.yaml 
 
 then run 
 
-docker apply -f kafka-deployment.yaml
+kubectl apply -f kafka-deployment.yaml
