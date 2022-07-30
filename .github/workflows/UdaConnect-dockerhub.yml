@@ -31,7 +31,7 @@ jobs:
         name: Build and push API
         uses: docker/build-push-action@v2.8.0
         with:
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nd064-udaconnect-app:latest
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nd064-udaconnect-api:latest
           context: "{{defaultContext}}:modules/api"
           file: ./Dockerfile
           push: true
