@@ -1,5 +1,7 @@
 from flask import Flask, jsonify
 from flask_cors import CORS
+import flask.scaffold
+flask.helpers._endpoint_from_view_func = flask.scaffold._endpoint_from_view_func 
 from flask_restx import Api
 from flask_sqlalchemy import SQLAlchemy
 
@@ -12,7 +14,7 @@ def create_app(env=None):
 
     app = Flask(__name__)
     app.config.from_object(config_by_name[env or "test"])
-    api = Api(app, title="UdaConnect API", version="0.1.0")
+    api = Api(app, title="UdaConnect Locations API", version="0.1.0")
 
     CORS(app)  # Set CORS for development
 

@@ -1,6 +1,6 @@
-import os
-from flask_sqlalchemy import SQLAlchemy
-
+import os 
+import logging 
+import sys 
 from app import create_app
 
 app = create_app(os.getenv("FLASK_ENV") or "test")
@@ -12,11 +12,4 @@ if __name__ == "__main__":
     datefmt='%Y-%m-%d %H:%M:%S', handlers=[ 
         logging.StreamHandler(sys.stdout),
         logging.StreamHandler(sys.stderr)
-    ]) 
-    @app.errorhandler(SQLAlchemyError)
-    def handle_exception(err):
-        """Handle DB connection errors """
-        if isinstance(err, sqlalchemy.exc.InternalError):
-            response["message"] = "Unable to connect to DB"
-        return jsonify(response), 555
-    app.run(debug=True)
+    ])  

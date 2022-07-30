@@ -1,3 +1,7 @@
+import traceback
+import app
+from jsonify import jsonify 
+
 class APIError(Exception):
     """All custom API Exceptions"""
     pass
@@ -16,7 +20,7 @@ def handle_exception(err):
     if len(err.args) > 0:
         response["message"] = err.args[0]
     # Add some logging so that we can monitor different types of errors 
-    app.logger.error(f"{err.description}: {response["message"]}")
+    app.logger.error(f"{err.description}: {response['message']}" )
     return jsonify(response), err.code
 
 @app.errorhandler(500)
