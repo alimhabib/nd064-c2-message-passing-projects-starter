@@ -29,7 +29,7 @@ class ConnectionService:
         # Cache all users in memory for quick lookup
         person_map: Dict[str, Person] = {person.id: person for person in PersonService.retrieve_all()}
 
-        location_apiUrl = f'{locationServiceUrl}:{os.environ["LOCATION_API_PORT"]}/api/persons/${person_id}/connectionslocations?start_date={start_date}&end_date={end_date}&distance={meters}'
+        location_apiUrl = f'{locationServiceUrl}:{os.environ["LOCATION_API_PORT"]}/api/locations/connectionslocations?person_id={person_id}&start_date={start_date}&end_date={end_date}&distance={meters}'
         response = requests.get(location_apiUrl)
         locations = json.loads(response.json())
         result: List[Connection] = []
