@@ -1,4 +1,4 @@
-from app.locations.models import  Location # noqa
+from app.locations.models import Connection, Location, Person  # noqa
 from app.locations.schemas import LocationSchema  # noqa
 
 
