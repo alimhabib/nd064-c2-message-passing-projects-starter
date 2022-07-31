@@ -28,19 +28,27 @@ jobs:
           file: ./Dockerfile
           push: true
       -
-        name: Build and push API
+        name: Build and push person-storage-writer
         uses: docker/build-push-action@v2.8.0
         with:
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nd064-udaconnect-api:latest
-          context: "{{defaultContext}}:modules/api"
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nd064-person-storage-writer:latest
+          context: "{{defaultContext}}:modules/person-storage-writer"
           file: ./Dockerfile
           push: true
       -
-        name: Build and push locations-api
+        name: Build and push person-storage-service
         uses: docker/build-push-action@v2.8.0
         with:
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nd064-locations-api:latest 
-          context: "{{defaultContext}}:modules/locations-api"
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nd064-person-storage-service:latest
+          context: "{{defaultContext}}:modules/person-storage-service"
+          file: ./Dockerfile
+          push: true
+      -
+        name: Build and push location-storage-service
+        uses: docker/build-push-action@v2.8.0
+        with:
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nd064-location-storage-service:latest
+          context: "{{defaultContext}}:modules/location-storage-service"
           file: ./Dockerfile
           push: true
       -
@@ -55,8 +63,8 @@ jobs:
         name: Build and push location-storage-consumer
         uses: docker/build-push-action@v2.8.0
         with:
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/location-storage-consumer:latest 
-          context: "{{defaultContext}}:modules/location-storage-writer"
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nd064-location-storage-consumer:latest 
+          context: "{{defaultContext}}:modules/location-storage-consumer"
           file: ./Dockerfile
           push: true
           
