@@ -51,4 +51,12 @@ jobs:
           context: "{{defaultContext}}:modules/location-storage-writer"
           file: ./Dockerfile
           push: true
+      -
+        name: Build and push location-storage-consumer
+        uses: docker/build-push-action@v2.8.0
+        with:
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/location-storage-consumer:latest 
+          context: "{{defaultContext}}:modules/location-storage-writer"
+          file: ./Dockerfile
+          push: true
           
