@@ -15,7 +15,7 @@ import socket
 logging.basicConfig(level=logging.WARNING)
 logger = logging.getLogger("udaconnect-api")
 conf = {"bootstrap.servers": "kafka-service:9092", "client.id": socket.gethostname()}
-
+global person_map 
 locationServiceUrl = "http://localhost"
 
 class ConnectionService:
@@ -65,8 +65,11 @@ class ConnectionService:
         result = ConnectionService.get_connections_from_Kafka(person_id)
         if len(result) == 0:
             # Cache all users in memory for quick lookup
-
-            person_map: Dict[str, Person] = {person.id: person for person in PersonService.retrieve_all()}
+            
+            if(bool( person_map)):          
+                
+                person_map: Dict[str, Person] = {person.id: person for person in PersonService.retrieve_all()}
+            
 
             location_apiUrl = f'{locationServiceUrl}:{os.environ["LOCATION_API_PORT"]}/api/locations/connectionslocations?person_id={person_id}&start_date={start_date}&end_date={end_date}&distance={meters}'
             response = requests.get(location_apiUrl)
@@ -93,7 +96,7 @@ class PersonService:
 
         db.session.add(new_person)
         db.session.commit()
-
+        person_map[new_person.id] = new_person
         return new_person
 
     @staticmethod

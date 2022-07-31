@@ -1,4 +1,16 @@
 
+Introduction: 
+
+Kfaka can be used as message broker, or as cache . checking the code, I found that Connection is the heaviest work 
+
+	- First Get all patients , again and again with every call (Database hit)
+	- Call location table twice ( two hits) 
+to break this down and enhance the performance and large data: 
+	- for first time, if no connections in the cache we go the normal flow. and cache the connections in kafka
+	- second time for the same person you can get the connections from the Kafka cache 
+	- for the patient inmemory dictionary, we don't need to fill it every single time , only if empty and on adding new person will append to it
+	 
+
 * Add location micro Services  This microService to handle the location related work, get location for connections... 
 
  
