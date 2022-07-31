@@ -1,50 +1,11 @@
+the API project, is broken down to 5 microservices : 
 
-Introduction: 
+- location-storage-writer gRPC API, accept the location request and push it to Kafka 
+- location-storage-consumer a listener to create topic, and once recieving an input will insert it to database 
+- location-storage-service a RESTFUL API for location queries 
+- person-storage-writer a RESTFUL API for person creation
+- person-storage-service a RESTFUL API for person queries, and connections retrieval
 
-Kfaka can be used as message broker, or as cache . checking the code, I found that Connection is the heaviest work 
-
-	- First Get all patients , again and again with every call (Database hit)
-	- Call location table twice ( two hits) 
-to break this down and enhance the performance and large data: 
-	- for first time, if no connections in the cache we go the normal flow. and cache the connections in kafka
-	- second time for the same person you can get the connections from the Kafka cache 
-	- for the patient inmemory dictionary, we don't need to fill it every single time , only if empty and on adding new person will append to it
-	 
-
-* Add location micro Services  This microService to handle the location related work, get location for connections... 
-
- 
-* finally person microService to handle person functionality, and call location service internally 
-	- use Kafka as cache storage, such that if any of the pods is down you still can get them from the cache 
-	
-in terms of progress and development 
-
-* start with Connection microservice, as it's a seperate block
-	- Code 
-		* Search for the Cache if any return otherwise, get from the DataBase 
-		* gRPC implement 
-		* person Service to use the code 
-		-- OutOfSCope: Update the Cache frequently, or according to specific strategy 
-	- docker image 
-	- github workflow to build and push the image  
-	- replace the main code to use the API 
-	- deployment script 
-* Location Service as it's not used by any client yet 
-	- Code 
-		* cleanup and seperate project  
-		* OpenAPI implementation   
-	- docker image 
-	- github workflow to build and push the image  
-	- replace the main code to use the API 
-	- deployment script 
-- Person microService 
-	- Code 
-		* cleanup and seperate project 
-		 * for connection API, if the connection in kafka cach retrieve otherwise call location service and before return the results save to kafka  
-		* OpenAPI implementation   
-	- docker image 
-	- github workflow to build and push the image  
-	- replace the frontend code to use the API 
-	- deployment script 
-
-I didn't find a valid point to use Grpc in this project 
+for enhancing the connection long process, it's an open question :
+	* use cache to cache the frequently used data, like the connection we can Use Redis for example 
+	* not create person memorycache everytime, maybe in frequent time 
