@@ -2,10 +2,8 @@
 from datetime import datetime, timedelta
 import os
 from typing import Dict, List
-
-from app import db
-from app.models import Location
-from app.schemas import LocationSchema
+from models import Location
+from schemas import LocationSchema
 from geoalchemy2.functions import ST_AsText, ST_Point
 
 import sqlalchemy as sa

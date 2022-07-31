@@ -4,13 +4,15 @@ import sys
 from confluent_kafka import Consumer
 from confluent_kafka.error import KafkaError,KafkaException
 
-from app.services import LocationService
+from services import LocationService
  
 
 
 global running
 running = True
-conf = {"bootstrap.servers": "kafka-service:9092", "client.id": socket.gethostname()}
+conf = {"bootstrap.servers": "kafka-service:9092", 'group.id': "UdaConnect",
+        'enable.auto.commit': False,
+        'auto.offset.reset': 'earliest'}
 
 def basic_consume_loop(consumer, topics):
     try:
@@ -39,7 +41,7 @@ def shutdown():
 def serve():
     running = True
     c = Consumer(conf)
-    basic_consume_loop(c,"Location_Creation")
+    basic_consume_loop(c,["Location_Creation"])
 
 if __name__ == "__main__":
     serve()
