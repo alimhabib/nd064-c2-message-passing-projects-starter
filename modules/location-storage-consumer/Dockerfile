@@ -5,4 +5,4 @@ COPY . /app
 WORKDIR /app
 RUN pip install -r requirements.txt
 
-ENTRYPOINT [ "python", "start.py" ]
+ENTRYPOINT [ "python", "app.py" ]

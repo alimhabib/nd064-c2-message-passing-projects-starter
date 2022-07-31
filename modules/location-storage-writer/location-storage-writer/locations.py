@@ -21,7 +21,9 @@ class LocationStorageWritersService(location_pb2_grpc.LocationStorageWriterServi
             print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
 
     def Create(self, request, context):
-        conf = {"bootstrap.servers": "kafka-service:9092", "client.id": socket.gethostname()}
+        conf = {"bootstrap.servers": "kafka-service:9092", 'group.id': "UdaConnect",
+        'enable.auto.commit': False,
+        'auto.offset.reset': 'earliest'}
         location: Dict = {
             "person_id" : request.person_id,
             "creation_time":datetime.utcnow(),
