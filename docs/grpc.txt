@@ -1,0 +1,2 @@
+
+please check ..\modules\location-storage-writer\location-storage-writer\locations-client.py for example how to call the API
