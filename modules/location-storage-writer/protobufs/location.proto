@@ -1,0 +1,12 @@
+syntax = "proto3";
+package unary;
+
+message LocationRequest {
+    int32 person_id=1;
+    string longitude=2;
+    string latitude=3;
+} 
+
+service LocationStorageWriter {
+    rpc Create (LocationRequest) returns (LocationRequest);
+}

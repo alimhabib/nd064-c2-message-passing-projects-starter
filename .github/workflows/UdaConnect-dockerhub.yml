@@ -43,4 +43,12 @@ jobs:
           context: "{{defaultContext}}:modules/locations-api"
           file: ./Dockerfile
           push: true
+      -
+        name: Build and push location-storage-writer
+        uses: docker/build-push-action@v2.8.0
+        with:
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/nd064-location-storage-writer:latest 
+          context: "{{defaultContext}}:modules/location-storage-writer"
+          file: ./Dockerfile
+          push: true
           
