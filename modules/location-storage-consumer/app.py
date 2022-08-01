@@ -5,12 +5,12 @@ from confluent_kafka import Consumer
 from confluent_kafka.error import KafkaError,KafkaException
 
 from services import LocationService
- 
+from confluent_kafka.admin import AdminClient, NewTopic
 
 
 global running
 running = True
-conf = {"bootstrap.servers": "kafka-service:9092", 'group.id': "UdaConnect",
+conf = {"bootstrap.servers": "kafka-service:9092", "client.id": socket.gethostname(), 'group.id': "UdaConnect",
         'enable.auto.commit': False,
         'auto.offset.reset': 'earliest'}
 
@@ -41,7 +41,14 @@ def shutdown():
 def serve():
     running = True
     c = Consumer(conf)
-    basic_consume_loop(c,["Location_Creation"])
+    topic_list=["Location_Creation"]
+    try:
+        admin_client = AdminClient({ "bootstrap.servers": "localhost:9092"})
+        admin_client.create_topics(topic_list)
+    except:
+        sys.stderr.write('Either the topic already exists or issue happened')
+
+    basic_consume_loop(c,topic_list)
 
 if __name__ == "__main__":
     serve()
