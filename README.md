@@ -76,10 +76,12 @@ Type `exit` to exit the virtual OS and you will find yourself back in your compu
 Afterwards, you can test that `kubectl` works by running a command like `kubectl describe services`. It should not return any errors.
 
 ### Steps
-1. `kubectl apply -f deployment` - Set up environment variables for the pods 
-2. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
-3. `kubectl apply -f Kafka-Deployment/zookeper-deployment.yaml` - to start kafka zookeper
-4. `kubectl apply -f Kafka-Deployment/kafka-deployment.yaml` - to start kafak 
+1. `kubectl apply -f Kafka-Deployment/zookeper-deployment.yaml` - to start kafka zookeper
+2. `kubectl apply -f Kafka-Deployment/kafka-deployment.yaml` - to start kafak 
+3. `scripts/run_kafka_command.bat <kafka-deployment-POD_NAME>` - create locations topics on kafka cluster, so it can easily write and listen to this topic
+4. `kubectl apply -f deployment` - Set up environment variables for the pods 
+5. `sh scripts/run_db_command.sh <POD_NAME>` - Seed your database against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`)
+
 Manually applying each of the individual `yaml` files is cumbersome but going through each step provides some context on the content of the starter project. In practice, we would have reduced the number of steps by running the command against a directory to apply of the contents: `kubectl apply -f deployment/`.
 
 Note: The first time you run this project, you will need to seed the database with dummy data. Use the command `sh scripts/run_db_command.sh <POD_NAME>` against the `postgres` pod. (`kubectl get pods` will give you the `POD_NAME`). Subsequent runs of `kubectl apply` for making changes to deployments or services shouldn't require you to seed the database again!
